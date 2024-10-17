@@ -1,22 +1,48 @@
 const Empleados = require("./usuarios");
 const Roles = require("./roles");
 const Sucursales = require("./sucursales");
+const Producto = require("./productos");
+const CategoriaProducto = require("./categorias-producto");
+const Mesas = require("./mesas");
+const Clientes = require("./clientes");
 
-// Un empleado tiene un rol (foreignKey: rol_id en la tabla EMPLEADOS)
-Empleados.belongsTo(Roles, {
-  foreignKey: "rol_id", // Foreign key en EMPLEADOS que referencia a ROLES
-  as: "rol", // Alias para acceder al rol del empleado
-});
+function applyAssociations() {
+  // Definir las relaciones aquí, después de que ambos modelos estén definidos
+  Empleados.belongsTo(Roles, { as: "rol", foreignKey: "rol_id" });
+  Roles.hasMany(Empleados, { as: "empleados", foreignKey: "rol_id" });
 
-// Un rol puede tener muchos empleados
-Roles.hasMany(Empleados, {
-  foreignKey: "rol_id",
-  as: "empleados",
-});
+  Sucursales.hasMany(Empleados, { as: "empleados", foreignKey: "sucursal_id" });
+  Empleados.belongsTo(Sucursales, {
+    as: "sucursal",
+    foreignKey: "sucursal_id",
+  });
 
+  Producto.belongsTo(CategoriaProducto, {
+    as: "categoriaProducto",
+    foreignKey: "categoria",
+  });
+  CategoriaProducto.hasMany(Producto, {
+    as: "productos",
+    foreignKey: "categoria",
+  });
 
-// Un empleado tiene una sucursal (foreignKey: sucursal_id en la tabla EMPLEADOS)
-Empleados.belongsTo(Sucursales, {
-  foreignKey: "sucursal_id", // Foreign key en EMPLEADOS que referencia a ROLES
-  as: "sucursal", // Alias para acceder al rol del empleado
-});
+  Mesas.belongsTo(Sucursales, {
+    as: "mesasSucursales",
+    foreignKey: "sucursal_id",
+  });
+  Sucursales.hasMany(Mesas, {
+    as: "sucursalesMesas",
+    foreignKey: "sucursal_id",
+  });
+
+  Clientes.hasMany(Sucursales, {
+    as: "clientesSucursales",
+    foreignKey: "sucursal_alta",
+  });
+  Sucursales.hasMany(Mesas, {
+    as: "sucursalesClientes",
+    foreignKey: "sucursal_alta",
+  });
+}
+
+module.exports = applyAssociations;

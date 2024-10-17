@@ -35,7 +35,7 @@ const Producto = sequelize.define(
       allowNull: true,
     },
     categoria: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     proveedor_id: {
@@ -43,7 +43,7 @@ const Producto = sequelize.define(
       allowNull: true,
     },
     sub_categoria: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     estado: {

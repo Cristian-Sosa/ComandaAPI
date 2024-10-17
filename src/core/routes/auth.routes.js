@@ -5,7 +5,7 @@ const limiter1 = require("../../shared/middlewares/rateLimmitMiddleware");
 
 /**
  * @swagger
- * /auth/login:
+ * /sistema-comanda/api/v1/auth/login:
  *   post:
  *     summary: Inicia sesión de usuario
  *     description: Inicia sesión de usuario utilizando nombre de usuario y contraseña.
@@ -42,5 +42,7 @@ const limiter1 = require("../../shared/middlewares/rateLimmitMiddleware");
  *         description: Error interno del servidor.
  */
 router.post("/login", limiter1, authController.loginUsuario);
+
+router.post("/createUsuario", limiter1, authController.createEmpleado);
 
 module.exports = router;

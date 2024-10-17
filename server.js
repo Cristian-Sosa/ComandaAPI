@@ -1,22 +1,24 @@
+// ! [feature pendiente] all: Abstraer la validación del token de usuario
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swaggerConfig");
 const sequelize = require("./config/sequelize-config");
 
-// Configuración del modelo en db
-const ClienteModel = require("./src/core/models/clientes");
+// * Configuración del modelo en db
+const SucursalesModel = require("./src/core/models/sucursales");
 const CategoriaProductoModel = require("./src/core/models/categorias-producto");
+const ProductosModel = require("./src/core/models/productos");
+const ClienteModel = require("./src/core/models/clientes");
 const DetallePedidoModel = require("./src/core/models/detalle-pedido");
 const MesasModel = require("./src/core/models/mesas");
 const PedidosModel = require("./src/core/models/pedidos");
 const PreciosModel = require("./src/core/models/precios");
-const ProductosModel = require("./src/core/models/productos");
 const RegistroAccionesModel = require("./src/core/models/registro-usuarios");
 const RolesModel = require("./src/core/models/roles");
-const SucursalesModel = require("./src/core/models/sucursales");
 const UsuariosModel = require("./src/core/models/usuarios");
-const ModelConfig = require("./src/core/models/index")
+const applyAssociations = require("./src/core/models/index");
 
 const cors = require("cors");
 
@@ -26,18 +28,27 @@ app.set("trust proxy", 1);
 app.use(bodyParser.json());
 app.use(cors());
 
-// Configuración de rutas
+// * Configuración de rutas
+const rutaPadre = "/sistema-comanda/api/v1";
+
+// ! Configuración de rutas v1
 const authRoutes = require("./src/core/routes/auth.routes");
-app.use("/auth", authRoutes);
+app.use(rutaPadre.concat("/auth"), authRoutes);
 
 const productRoutes = require("./src/core/routes/product.routes");
-app.use("/product", productRoutes);
+app.use(rutaPadre.concat("/product"), productRoutes);
 
 // Configuración de Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  rutaPadre.concat("/api-docs"),
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 // Configuración del servidor
 const port = process.env.PORT || 3000;
+
+applyAssociations();
 
 sequelize
   .authenticate()
@@ -52,20 +63,19 @@ sequelize
     console.error("Error al conectar a la base de datos:", error)
   );
 
+//  * Descomentar si no hay tablas y/o datos
 sequelize
   .sync({ force: true })
   .then(async () => {
-    // console.log("Tablas sincronizadas correctamente.");
-
-    // Semillado SQL
+    // * Semillado SQL
     const sqlCommands = [
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("admin", "gestor-comanda");',
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("mozo", "comandera");',
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("cocina", "visor-pedidos");',
       'INSERT IGNORE INTO sucursales (nombre, direccion) VALUES ("Alto Verde", "Calle falsa 4350");',
-      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653284", "gustavosocris@gmail.com", "3517626141", "admin", "12345678", 1, 1, 1);',
-      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653285", "gustavosocris2@gmail.com", "3517626142", "csosa", "1234", 2, 1, 1);',
-      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653286", "gustavosocris3@gmail.com", "3517626143", "csosa", "123456", 3, 1, 1);',
+      'INSERT IGNORE INTO sucursales (nombre, direccion, estado) VALUES ("Sucursal Centro", "Av. Central 123", 1), ("Sucursal Norte", "Calle Norte 456", 1), ("Sucursal Sur", "Calle Sur 789", 1);',
+      // 'INSERT IGNORE INTO mesas (nombre, sucursal_id, ubicacion, estado) VALUES ("Mesa 1", 1, "Zona A", 1), ("Mesa 2", 1, "Zona B", 1), ("Mesa 3", 1, "Zona C", 1), ("Mesa 4", 1, "Zona D", 1), ("Mesa 5", 1, "Zona E", 1);',
+      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653284", "gustavosocris@gmail.com", "3517626141", "sosa", "$2a$10$OBO2oDNB95.ogJhAwWM83ORwGdsKxQt58HuRfNTsulCD6qTlloVFm", 1, 1, 1);',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("tablas y entradas", 1)',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("papas", 1)',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("sandwiches", 1)',
