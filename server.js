@@ -72,10 +72,8 @@ sequelize
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("admin", "gestor-comanda");',
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("mozo", "comandera");',
       'INSERT IGNORE INTO roles (nombre, ruta_acceso) VALUES ("cocina", "visor-pedidos");',
-      'INSERT IGNORE INTO sucursales (nombre, direccion) VALUES ("Alto Verde", "Calle falsa 4350");',
       'INSERT IGNORE INTO sucursales (nombre, direccion, estado) VALUES ("Sucursal Centro", "Av. Central 123", 1), ("Sucursal Norte", "Calle Norte 456", 1), ("Sucursal Sur", "Calle Sur 789", 1);',
-      // 'INSERT IGNORE INTO mesas (nombre, sucursal_id, ubicacion, estado) VALUES ("Mesa 1", 1, "Zona A", 1), ("Mesa 2", 1, "Zona B", 1), ("Mesa 3", 1, "Zona C", 1), ("Mesa 4", 1, "Zona D", 1), ("Mesa 5", 1, "Zona E", 1);',
-      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653284", "gustavosocris@gmail.com", "3517626141", "sosa", "$2a$10$OBO2oDNB95.ogJhAwWM83ORwGdsKxQt58HuRfNTsulCD6qTlloVFm", 1, 1, 1);',
+      'INSERT IGNORE INTO empleados (nombre, apellido, documento, correo, telefono, usuario, clave, rol_id, sucursal_id, estado) VALUES ("Cristian", "Sosa", "44653284", "example@gmail.com", "3517626141", "sosa", "$2a$10$OBO2oDNB95.ogJhAwWM83ORwGdsKxQt58HuRfNTsulCD6qTlloVFm", 1, 1, 1);',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("tablas y entradas", 1)',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("papas", 1)',
       'INSERT IGNORE INTO categoria_producto (nombre, estado) VALUES ("sandwiches", 1)',
@@ -99,7 +97,6 @@ sequelize
     for (const command of sqlCommands) {
       try {
         await sequelize.query(command);
-        // console.info({'Semillado exitoso': command});
       } catch (error) {
         console.error(`Error al ejecutar el semillado por comando SQL`);
       }
